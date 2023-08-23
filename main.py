@@ -1,34 +1,65 @@
 # I got bored of sitting around for hours solving sudokus so why not get the computer to do it.
 
-grid = [
-    [5,3,0,0,7,0,0,0,0],
-    [6,0,0,1,9,5,0,0,0],
-    [0,9,8,0,0,0,0,6,0],
-    [8,0,0,0,6,0,0,0,3],
-    [4,0,0,8,0,3,0,0,1],
-    [7,0,0,0,2,0,0,0,6],
-    [0,6,0,0,0,0,2,8,0],
-    [0,0,0,4,1,9,0,0,5],
-    [0,0,0,0,8,9,9,7,9]
-] #Enter soduko here
 
-def printer(grid):
-    for line in grid:
-        print(line)
 
-def possible(y,x,n):
-    global grid
-    for i in range(0,9):
-        if grid[y][i] == n:
+def is_valid_move(grid, row, col, num):
+    for x in range(9):
+        if grid[row][x] == num:
             return False
-    for i in range(0,9):
-        if grid[i][x] == n:
+    for y in range(9):
+        if grid[y][col] == num:
             return False
-    x0 = (x//3)*3
-    y0 = (y//3)*3
-    for i in range(0,3):
-        for j in range(0,3):
-            if grid[y0*i][x0*j] == n:
+    
+    corner_row = row-row % 3
+    corner_col = col - col % 3
+    for x in range(3):
+        for y in range(3):
+            if grid[corner_row+x][corner_col+y] == num:
                 return False
+            
     return True
 
+def solve(grid, row, col):
+    if col == 9:
+        if row == 8:
+            return True
+        row += 1
+        col = 0
+
+    if grid[row][col] > 0:
+        return solve(grid, row, col+1)
+    
+    for num in range(1,10):
+        if is_valid_move(grid, row, col, num):
+            grid[row][col] = num
+            if solve(grid,row,col+1):
+                return True
+            
+        grid[row][col] = 0
+
+    return False
+
+def get_user_grid():
+    print("""
+Usage:
+        To use this enter the size of the sudoko 
+        then the numbers with 0 being empty from left to right and downwards 
+        (like reading a book)""")
+    grid = []
+    for i in range(9):
+        line = []
+        for j in range(9):
+            line.append(int(input(f"Enter row {j} col {i}: ")))
+        grid.append(line)
+    return grid
+
+grid =  get_user_grid() #Enter soduko here
+
+
+if solve(grid, 0,0):
+    for i in range(9):
+        for j in range(9):
+            print(grid[i][j], end = "  ")
+        print()
+else:
+    print("No solution found")
