@@ -56,7 +56,8 @@ Usage:
 
 grid, size =  get_user_grid() #Enter soduko here
 
-
+for i in grid:
+    print(i)
 if solve(grid, 0,0, size):
     for i in range(size):
         for j in range(size):
