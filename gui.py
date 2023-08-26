@@ -1,4 +1,6 @@
 from tkinter import *
+from solver import solver
+
 
 root = Tk()
 root.title("Sudoku Solver")
@@ -58,13 +60,24 @@ def getValues():
             else:
                 rows.append(int(val))
         board.append(rows)
+    updateValues(board)
 
 btn = Button(root, command=getValues, text="Solve", width=10)
 btn.grid(row=20, column=1, columnspan=5, pady=20)
 
-btn = Button(root, command=getValues, text="Clear", width=10)
+btn = Button(root, command=clearValues, text="Clear", width=10)
 btn.grid(row=20, column=5, columnspan=5, pady=20)
     
+def updateValues(s):
+    sol = solver(s)
+    if sol != "no":
+        for rows in range(2,11):
+            for col in range(1,10):
+                cells[(rows,col)].delete(0, "end")
+                cells[(rows,col)].insert(0, sol[rows-2][col-1])
+        solvedLabel.configure(text = "Sudoku Solved")
+    else:
+        errLabel.configure(text="No solution found")
 
 draw9x9Grid()
 root.mainloop()
